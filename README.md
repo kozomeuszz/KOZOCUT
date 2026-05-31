@@ -213,3 +213,221 @@ Jeżeli Twoja płytka pojawia się pod innym portem, zmień te wartości albo us
 Kod zakłada, że jedno cięcie to zawsze stała liczba kroków `guillotineStepsPerCut`. Domyślna wartość to `1600`.
 
 Jeżeli pozycja noża potrafi się rozjechać, dodaj krańcówkę referencyjną dla gilotyny albo mechaniczny punkt bazowania. Przy pracy z nożem stosuj osłonę i nie uruchamiaj mechanizmu z odsłoniętą strefą cięcia.
+
+---
+
+# KOZOcut - English Version
+
+KOZOcut is firmware for a compact cable cutting machine based on an `ESP32-C3 Super Mini`, two `NEMA17` stepper motors, and `TMC2209` stepper drivers. The device starts its own `KOZOcut` Wi-Fi access point, and the control panel is available at `http://192.168.4.1`.
+
+The project is designed so the enclosure and mechanical parts can be 3D printed in separate pieces, while the electronics can be assembled from commonly available modules.
+
+## Firmware Features
+
+- cable feeding to a target length in `mm`
+- production of a selected number of pieces
+- single test cut
+- manual `jog` feed
+- `steps/mm` calibration
+- feed and cutting speed adjustment
+- configurable number of guillotine steps per cut
+- configuration saved in `ESP32-C3` memory
+
+## Parts
+
+| Part | Quantity | Notes |
+| --- | ---: | --- |
+| `ESP32-C3 Super Mini` USB-C | 1 | Main Wi-Fi controller and control logic |
+| `TMC2209 V2.0` stepper driver with heatsink | 2 | One for the feeder, one for the guillotine |
+| `NEMA17 17HS4401` stepper motor, 1.8 deg, 1.5 A, 42 N.cm | 2 | Feeder and guillotine drive |
+| `12 V` or `24 V` switching power supply | 1 | `24 V` is recommended for better motor dynamics |
+| `MP1584EN` buck converter | 1 | Steps the supply voltage down to `5 V` for the ESP32 |
+| `A4988/DRV8825` expansion board / shield | 1 | Can be used as a carrier board for Pololu-style drivers |
+| Extruder spring `1.2 x 7.5 x 20 mm` | as needed | Feeder pressure mechanism |
+| `13 mm` bearings | as needed | Used as extruder pressure rollers |
+| `M3` and `M4` Phillips countersunk screws | as needed | Mounting printed parts and electronics |
+| `M3` and `M4` flat-head aluminum rivet nuts | as needed | Threaded mounting points in mechanical parts |
+| 3D printed parts | project-specific | Frame, guides, motor mounts, pressure mechanism, covers |
+| Wires, screw terminals, ferrules | as needed | Select according to the final build |
+
+Example AliExpress part sources:
+
+- `DRV8825/A4988` stepper driver expansion board for Arduino UNO/RAMPS: https://a.aliexpress.com/_EJtjCLG
+- Extruder springs `1.2 x 7.5 x 20 mm`: https://a.aliexpress.com/_EzRrIdo
+- `Usongshine NEMA17 17HS4401` stepper motor: https://a.aliexpress.com/_EuOhsWE
+- `ESP32-C3 Super Mini`: https://a.aliexpress.com/_EHPe6JM
+- `12 V / 24 V` switching power supply: https://a.aliexpress.com/_EuOHUfk
+- `MP1584EN` buck converter: https://a.aliexpress.com/_Ez9iknU
+- `TMC2209 V2.0` driver: https://a.aliexpress.com/_EGThV0w
+- `M3/M4` Phillips countersunk screws: https://a.aliexpress.com/_Ez9eS9Y
+- `M3/M4` flat-head rivet nuts: https://a.aliexpress.com/_EJ4cOce
+
+## 3D Printing and Mechanical Assembly
+
+The mechanical parts can be printed separately, which makes servicing and future revisions easier. A practical split is:
+
+- main frame
+- feeder motor mount
+- guillotine motor mount
+- cable guide
+- extruder pressure mechanism with spring and `13 mm` bearings
+- electronics mount
+- blade and moving-part cover
+
+After printing, check cable guide alignment, extruder bearing pressure, and free guillotine movement. The mechanism must move smoothly before the motors are connected, otherwise the drivers may skip steps.
+
+The printed parts use `M3` and `M4` countersunk screws and `M3`/`M4` rivet nuts. Rivet nuts are useful in service points where parts may be removed repeatedly, such as covers, motor mounts, and the electronics panel.
+
+## ESP32-C3 Pinout
+
+The firmware uses the following pins:
+
+| Function | ESP32-C3 Pin | Driver Signal |
+| --- | --- | --- |
+| Feeder motor direction | `GPIO0` | Feeder driver `DIR` |
+| Feeder motor step | `GPIO1` | Feeder driver `STEP` |
+| Guillotine motor direction | `GPIO7` | Guillotine driver `DIR` |
+| Guillotine motor step | `GPIO3` | Guillotine driver `STEP` |
+| Shared driver enable | `GPIO4` | `EN` / `ENABLE` on both drivers |
+| On-board status LED | `GPIO8` | LED |
+| BOOT button | `GPIO9` | `INPUT_PULLUP` input |
+
+`EN` on typical `TMC2209/A4988/DRV8825` drivers is active low. In the firmware, `GPIO4 = LOW` enables the drivers and `GPIO4 = HIGH` disables them.
+
+## Wiring Diagram
+
+```text
+                 +----------------------+
+ AC 230 V  ----> | 12/24 V DC PSU       |
+                 +----------+-----------+
+                            |
+                            | +12/24 V
+                            v
+        +-------------------+-------------------+
+        |                                       |
+        v                                       v
++---------------+                       +----------------+
+| TMC2209 FEED  |                       | TMC2209 CUT    |
+| VM  <- +12/24 |                       | VM  <- +12/24  |
+| GND <- GND    |                       | GND <- GND     |
+| VIO <- 3.3 V  |                       | VIO <- 3.3 V   |
+| DIR <- GPIO0  |                       | DIR <- GPIO7   |
+| STEP<- GPIO1  |                       | STEP<- GPIO3   |
+| EN  <- GPIO4  |                       | EN  <- GPIO4   |
+| A/B -> NEMA17 |                       | A/B -> NEMA17  |
++-------+-------+                       +--------+-------+
+        |                                        |
+        v                                        v
+   Feeder motor                            Guillotine motor
+
+                 +----------------------+
+                 | Buck MP1584EN       |
+ +12/24 V ------>| IN+              OUT+|---- 5 V ----+
+ GND ----------->| IN-              OUT-|---- GND ----+
+                 +----------------------+             |
+                                                       v
+                                             +----------------+
+                                             | ESP32-C3 Mini  |
+                                             | 5V/VBUS <- 5 V |
+                                             | GND     <- GND |
+                                             | 3V3     -> VIO |
+                                             +----------------+
+```
+
+All grounds must be common:
+
+- power supply `GND`
+- buck converter `GND`
+- ESP32-C3 `GND`
+- both stepper driver `GND` pins
+
+## Stepper Driver Wiring
+
+Minimum wiring for each `TMC2209`:
+
+| Driver Pin | Feeder | Guillotine |
+| --- | --- | --- |
+| `VM` / `MOT+` | `+12/24 V` | `+12/24 V` |
+| Motor power `GND` | power supply ground | power supply ground |
+| `VIO` / `VDD` | `3.3 V` from ESP32 | `3.3 V` from ESP32 |
+| Logic `GND` | ESP32 `GND` | ESP32 `GND` |
+| `STEP` | `GPIO1` | `GPIO3` |
+| `DIR` | `GPIO0` | `GPIO7` |
+| `EN` | `GPIO4` | `GPIO4` |
+| motor outputs | feeder motor coils | guillotine motor coils |
+
+If you use an `A4988/DRV8825` expansion board, treat it as a carrier board. Check the pin labels on your specific module, because the order of `STEP`, `DIR`, `EN`, `VMOT`, `VDD`, and `GND` may differ between shield versions.
+
+## Power
+
+Recommended setup:
+
+- `24 V DC` power supply feeds the motor driver `VM` pins
+- `MP1584EN` buck converter steps `24 V` down to stable `5 V`
+- `5 V` powers the `5V/VBUS` pin of the `ESP32-C3`
+- the ESP32 `3V3` pin powers the `VIO/VDD` logic side of the drivers
+
+Do not feed `24 V` into the ESP32. Before connecting the ESP32, set the buck converter output to `5.0 V` with a multimeter.
+
+Working with the `AC 230 V` input side of the power supply is dangerous. Wire the mains side only with power disconnected and protect the terminals from accidental touch.
+
+## Calibration
+
+The firmware default value is:
+
+```text
+44.0 steps/mm
+```
+
+Practical procedure:
+
+1. In the control panel, set a known test feed, for example `100 mm`.
+2. Measure the actual cable feed length.
+3. Calculate the new value:
+
+```text
+new_steps_per_mm = old_steps_per_mm * (target_length_mm / measured_length_mm)
+```
+
+Example:
+
+```text
+44.0 * (100 / 96.5) = 45.60
+```
+
+## Build and Upload
+
+The project uses PlatformIO.
+
+```bash
+pio run
+pio run -t upload
+pio device monitor
+```
+
+Default port in `platformio.ini`:
+
+```ini
+monitor_port = /dev/cu.usbmodem1101
+upload_port = /dev/cu.usbmodem1101
+```
+
+If your board appears on a different port, change these values or remove them and let PlatformIO detect the port automatically.
+
+## First Start
+
+1. Check all wiring with the motors disconnected.
+2. Set the buck converter to `5 V`.
+3. Connect the ESP32 and upload the firmware.
+4. Connect the drivers and motors.
+5. Turn on motor power.
+6. Connect to the `KOZOcut` Wi-Fi network.
+7. Open `http://192.168.4.1`.
+8. Run a `jog` test and a single test cut.
+9. Calibrate `steps/mm` and the number of guillotine steps.
+
+## Mechanical Notes
+
+The code assumes that one cut is always a fixed number of `guillotineStepsPerCut` steps. The default value is `1600`.
+
+If the blade position drifts over time, add a guillotine homing limit switch or a mechanical reference point. Use a blade cover and do not run the mechanism with the cutting area exposed.

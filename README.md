@@ -26,8 +26,11 @@ Projekt jest przygotowany tak, aby obudowę i elementy mechaniczne można było 
 | Przetwornica buck `MP1584EN` | 1 | Obniża napięcie zasilacza do `5 V` dla ESP32 |
 | Płytka rozszerzeń / shield pod `A4988/DRV8825` | 1 | Może służyć jako baza montażowa dla sterowników w formacie Pololu |
 | Sprężyna ekstrudera `1.2 x 7.5 x 20 mm` | wg mechaniki | Docisk rolki podającej |
+| Łożyska `13 mm` | wg mechaniki | Użyte jako rolki dociskowe ekstrudera |
+| Śruby krzyżakowe z łbem stożkowym `M3` i `M4` | wg potrzeb | Montaż elementów drukowanych i elektroniki |
+| Nitonakrętki aluminiowe `M3` i `M4` z łbem płaskim | wg potrzeb | Gwintowane punkty montażowe w częściach mechanicznych |
 | Wydrukowane części 3D | wg projektu | Rama, prowadnice, mocowania silników, docisk, osłony |
-| Przewody, złącza śrubowe, tulejki, śruby | wg potrzeb | Dobierz do finalnej konstrukcji |
+| Przewody, złącza śrubowe, tulejki | wg potrzeb | Dobierz do finalnej konstrukcji |
 
 Przykładowe źródła części z AliExpress:
 
@@ -38,6 +41,8 @@ Przykładowe źródła części z AliExpress:
 - Zasilacz impulsowy `12 V / 24 V`: https://a.aliexpress.com/_EuOHUfk
 - Przetwornica buck `MP1584EN`: https://a.aliexpress.com/_Ez9iknU
 - Sterownik `TMC2209 V2.0`: https://a.aliexpress.com/_EGThV0w
+- Śruby krzyżakowe z łbem stożkowym `M3/M4`: https://a.aliexpress.com/_Ez9eS9Y
+- Nitonakrętki z łbem płaskim `M3/M4`: https://a.aliexpress.com/_EJ4cOce
 
 ## Druk 3D i montaż mechaniczny
 
@@ -47,11 +52,13 @@ Części mechaniczne można drukować osobno, co ułatwia serwis i późniejsze 
 - uchwyt silnika podajnika
 - uchwyt silnika gilotyny
 - prowadnica kabla
-- docisk rolki podającej ze sprężyną
+- docisk ekstrudera ze sprężyną i łożyskami `13 mm`
 - mocowanie elektroniki
 - osłona noża i elementów ruchomych
 
-Po wydruku sprawdź osiowość prowadnicy kabla, docisk rolki i swobodny ruch gilotyny. Mechanika musi poruszać się lekko przed podłączeniem silników, inaczej sterownik może gubić kroki.
+Po wydruku sprawdź osiowość prowadnicy kabla, docisk łożysk ekstrudera i swobodny ruch gilotyny. Mechanika musi poruszać się lekko przed podłączeniem silników, inaczej sterownik może gubić kroki.
+
+Do montażu drukowanych części użyto śrub `M3` i `M4` z łbem stożkowym oraz nitonakrętek `M3` i `M4`. Nitonakrętki warto osadzać w miejscach serwisowych, gdzie elementy będą wielokrotnie odkręcane, np. przy mocowaniu osłon, uchwytów silników i panelu elektroniki.
 
 ## Pinout ESP32-C3
 

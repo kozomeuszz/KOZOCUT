@@ -27,6 +27,7 @@ Projekt jest przygotowany tak, aby obudowę i elementy mechaniczne można było 
 | Płytka rozszerzeń / shield pod `A4988/DRV8825` | 1 | Może służyć jako baza montażowa dla sterowników w formacie Pololu |
 | Sprężyna ekstrudera `1.2 x 7.5 x 20 mm` | wg mechaniki | Docisk rolki podającej |
 | Łożyska `13 mm` | wg mechaniki | Użyte jako rolki dociskowe ekstrudera |
+| Ostrze z regulowanego narzędzia do ściągania izolacji UTP/STP | 1 | Użyte jako element tnący gilotyny i strippera |
 | Śruby krzyżakowe z łbem stożkowym `M3` i `M4` | wg potrzeb | Montaż elementów drukowanych i elektroniki |
 | Nitonakrętki aluminiowe `M3` i `M4` z łbem płaskim | wg potrzeb | Gwintowane punkty montażowe w częściach mechanicznych |
 | Wydrukowane części 3D | wg projektu | Rama, prowadnice, mocowania silników, docisk, osłony |
@@ -43,6 +44,7 @@ Przykładowe źródła części z AliExpress:
 - Sterownik `TMC2209 V2.0`: https://a.aliexpress.com/_EGThV0w
 - Śruby krzyżakowe z łbem stożkowym `M3/M4`: https://a.aliexpress.com/_Ez9eS9Y
 - Nitonakrętki z łbem płaskim `M3/M4`: https://a.aliexpress.com/_EJ4cOce
+- Regulowane narzędzie UTP/STP do ściągania izolacji i cięcia kabli, użyte jako dawca ostrza: https://a.aliexpress.com/_EG4WMGQ
 
 ## Druk 3D i montaż mechaniczny
 
@@ -59,6 +61,8 @@ Części mechaniczne można drukować osobno, co ułatwia serwis i późniejsze 
 Po wydruku sprawdź osiowość prowadnicy kabla, docisk łożysk ekstrudera i swobodny ruch gilotyny. Mechanika musi poruszać się lekko przed podłączeniem silników, inaczej sterownik może gubić kroki.
 
 Do montażu drukowanych części użyto śrub `M3` i `M4` z łbem stożkowym oraz nitonakrętek `M3` i `M4`. Nitonakrętki warto osadzać w miejscach serwisowych, gdzie elementy będą wielokrotnie odkręcane, np. przy mocowaniu osłon, uchwytów silników i panelu elektroniki.
+
+Ostrze gilotyny i strippera zostało pozyskane z regulowanego narzędzia do ściągania izolacji i cięcia kabli `UTP/STP`. Przy projektowaniu mocowania ostrza zachowaj sztywne podparcie, możliwość regulacji oraz osłonę strefy cięcia.
 
 ## Pinout ESP32-C3
 
@@ -245,6 +249,7 @@ The project is designed so the enclosure and mechanical parts can be 3D printed 
 | `A4988/DRV8825` expansion board / shield | 1 | Can be used as a carrier board for Pololu-style drivers |
 | Extruder spring `1.2 x 7.5 x 20 mm` | as needed | Feeder pressure mechanism |
 | `13 mm` bearings | as needed | Used as extruder pressure rollers |
+| Blade from an adjustable UTP/STP cable stripping tool | 1 | Used as the guillotine and stripper cutting element |
 | `M3` and `M4` Phillips countersunk screws | as needed | Mounting printed parts and electronics |
 | `M3` and `M4` flat-head aluminum rivet nuts | as needed | Threaded mounting points in mechanical parts |
 | 3D printed parts | project-specific | Frame, guides, motor mounts, pressure mechanism, covers |
@@ -261,6 +266,7 @@ Example AliExpress part sources:
 - `TMC2209 V2.0` driver: https://a.aliexpress.com/_EGThV0w
 - `M3/M4` Phillips countersunk screws: https://a.aliexpress.com/_Ez9eS9Y
 - `M3/M4` flat-head rivet nuts: https://a.aliexpress.com/_EJ4cOce
+- Adjustable UTP/STP cable stripping and cutting tool, used as a blade donor: https://a.aliexpress.com/_EG4WMGQ
 
 ## 3D Printing and Mechanical Assembly
 
@@ -277,6 +283,8 @@ The mechanical parts can be printed separately, which makes servicing and future
 After printing, check cable guide alignment, extruder bearing pressure, and free guillotine movement. The mechanism must move smoothly before the motors are connected, otherwise the drivers may skip steps.
 
 The printed parts use `M3` and `M4` countersunk screws and `M3`/`M4` rivet nuts. Rivet nuts are useful in service points where parts may be removed repeatedly, such as covers, motor mounts, and the electronics panel.
+
+The guillotine and stripper blade was taken from an adjustable `UTP/STP` cable stripping and cutting tool. When designing the blade mount, keep the blade rigidly supported, adjustable, and covered by a guard around the cutting area.
 
 ## ESP32-C3 Pinout
 

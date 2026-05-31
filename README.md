@@ -1,49 +1,164 @@
 # KOZOcut
 
-Prosty firmware startowy dla przecinarki kabli na `ESP32-C3 Mini` i dwóch sterownikach `TMC2209`.
+KOZOcut to firmware dla kompaktowej przecinarki do kabli opartej o `ESP32-C3 Super Mini`, dwa silniki krokowe `NEMA17` i sterowniki `TMC2209`. Urządzenie uruchamia własny punkt Wi-Fi `KOZOcut`, a panel sterowania jest dostępny pod adresem `http://192.168.4.1`.
 
-## Założenia pinów
+Projekt jest przygotowany tak, aby obudowę i elementy mechaniczne można było wydrukować w częściach na drukarce 3D, a elektronikę złożyć z łatwo dostępnych modułów.
 
-- `Extruder DIR`: `GPIO0`
-- `Extruder STEP`: `GPIO1`
-- `Guillotine DIR`: `GPIO7`
-- `Guillotine STEP`: `GPIO3`
-- `Enable obu driverów`: `GPIO4`
+## Funkcje firmware
 
-## Ważne połączenia
+- podawanie kabla na zadaną długość w `mm`
+- produkcja zadanej liczby odcinków
+- pojedyncze cięcie testowe
+- ręczny posuw `jog`
+- regulacja `steps/mm`
+- regulacja prędkości podawania i cięcia
+- ustawianie liczby kroków gilotyny na jedno cięcie
+- zapisywanie konfiguracji w pamięci `ESP32-C3`
 
-- `VM` driverów `TMC2209` -> `24V`
-- `VIO` driverów `TMC2209` -> `3.3V` z `ESP32-C3`
-- `GND` zasilacza, `GND` driverów i `GND` `ESP32-C3` muszą być wspólne
-- `STEP`, `DIR`, `EN` z `ESP32-C3` idą do odpowiednich wejść obu driverów
+## Części
 
-## Co robi firmware
+| Element | Ilość | Uwagi |
+| --- | ---: | --- |
+| `ESP32-C3 Super Mini` USB-C | 1 | Główny kontroler Wi-Fi i logika sterowania |
+| Sterownik silnika krokowego `TMC2209 V2.0` z radiatorem | 2 | Jeden dla podajnika, jeden dla gilotyny |
+| Silnik krokowy `NEMA17 17HS4401`, 1.8 deg, 1.5 A, 42 N.cm | 2 | Podajnik i napęd gilotyny |
+| Zasilacz impulsowy `12 V` lub `24 V` | 1 | Zalecane `24 V` dla lepszej dynamiki silników |
+| Przetwornica buck `MP1584EN` | 1 | Obniża napięcie zasilacza do `5 V` dla ESP32 |
+| Płytka rozszerzeń / shield pod `A4988/DRV8825` | 1 | Może służyć jako baza montażowa dla sterowników w formacie Pololu |
+| Sprężyna ekstrudera `1.2 x 7.5 x 20 mm` | wg mechaniki | Docisk rolki podającej |
+| Wydrukowane części 3D | wg projektu | Rama, prowadnice, mocowania silników, docisk, osłony |
+| Przewody, złącza śrubowe, tulejki, śruby | wg potrzeb | Dobierz do finalnej konstrukcji |
 
-- stawia Access Point `KOZOcut`
-- sieć jest otwarta, bez hasła
-- panel jest pod `http://192.168.4.1`
-- pozwala ustawić:
-  - ilość sztuk
-  - długość kabla w `mm`
-  - kalibrację `steps/mm`
-  - szybkość podawania i cięcia
-  - liczbę kroków gilotyny na jedno cięcie
-- pozwala wykonać:
-  - start produkcji
-  - stop
-  - ręczny posuw `jog`
-  - test pojedynczego cięcia
+Przykładowe źródła części z AliExpress:
 
-## Kalibracja `steps/mm`
+- Płytka rozszerzeń sterownika silnika krokowego `DRV8825/A4988` dla Arduino UNO/RAMPS: https://a.aliexpress.com/_EJtjCLG
+- Sprężyny ekstrudera `1.2 x 7.5 x 20 mm`: https://a.aliexpress.com/_EzRrIdo
+- Silnik krokowy `Usongshine NEMA17 17HS4401`: https://a.aliexpress.com/_EuOhsWE
+- `ESP32-C3 Super Mini`: https://a.aliexpress.com/_EHPe6JM
+- Zasilacz impulsowy `12 V / 24 V`: https://a.aliexpress.com/_EuOHUfk
+- Przetwornica buck `MP1584EN`: https://a.aliexpress.com/_Ez9iknU
+- Sterownik `TMC2209 V2.0`: https://a.aliexpress.com/_EGThV0w
 
-Wartość początkowa w kodzie to `52.4590 steps/mm`.
-Ta wartość została przeliczona z pomiaru, w którym zadane `30 mm` dawało realnie `25 mm`.
+## Druk 3D i montaż mechaniczny
 
-Praktyczna kalibracja:
+Części mechaniczne można drukować osobno, co ułatwia serwis i późniejsze poprawki. Praktyczny podział:
 
-1. Ustaw w panelu znaną wartość, np. przesuw `100 mm`.
-2. Zmierz realny wysuw kabla.
-3. Przelicz:
+- rama główna
+- uchwyt silnika podajnika
+- uchwyt silnika gilotyny
+- prowadnica kabla
+- docisk rolki podającej ze sprężyną
+- mocowanie elektroniki
+- osłona noża i elementów ruchomych
+
+Po wydruku sprawdź osiowość prowadnicy kabla, docisk rolki i swobodny ruch gilotyny. Mechanika musi poruszać się lekko przed podłączeniem silników, inaczej sterownik może gubić kroki.
+
+## Pinout ESP32-C3
+
+Firmware używa poniższych pinów:
+
+| Funkcja | Pin ESP32-C3 | Sygnał na sterowniku |
+| --- | --- | --- |
+| Kierunek silnika podajnika | `GPIO0` | `DIR` sterownika podajnika |
+| Krok silnika podajnika | `GPIO1` | `STEP` sterownika podajnika |
+| Kierunek silnika gilotyny | `GPIO7` | `DIR` sterownika gilotyny |
+| Krok silnika gilotyny | `GPIO3` | `STEP` sterownika gilotyny |
+| Wspólne włączenie sterowników | `GPIO4` | `EN` / `ENABLE` obu sterowników |
+| Dioda statusu na płytce | `GPIO8` | LED |
+| Przycisk BOOT | `GPIO9` | wejście z `INPUT_PULLUP` |
+
+`EN` w typowych sterownikach `TMC2209/A4988/DRV8825` jest aktywne stanem niskim. W firmware `GPIO4 = LOW` włącza sterowniki, a `GPIO4 = HIGH` je wyłącza.
+
+## Schemat połączeń
+
+```text
+                 +----------------------+
+ AC 230 V  ----> | Zasilacz 12/24 V DC  |
+                 +----------+-----------+
+                            |
+                            | +12/24 V
+                            v
+        +-------------------+-------------------+
+        |                                       |
+        v                                       v
++---------------+                       +----------------+
+| TMC2209 FEED  |                       | TMC2209 CUT    |
+| VM  <- +12/24 |                       | VM  <- +12/24  |
+| GND <- GND    |                       | GND <- GND     |
+| VIO <- 3.3 V  |                       | VIO <- 3.3 V   |
+| DIR <- GPIO0  |                       | DIR <- GPIO7   |
+| STEP<- GPIO1  |                       | STEP<- GPIO3   |
+| EN  <- GPIO4  |                       | EN  <- GPIO4   |
+| A/B -> NEMA17 |                       | A/B -> NEMA17  |
++-------+-------+                       +--------+-------+
+        |                                        |
+        v                                        v
+  Silnik podajnika                         Silnik gilotyny
+
+                 +----------------------+
+                 | Buck MP1584EN       |
+ +12/24 V ------>| IN+              OUT+|---- 5 V ----+
+ GND ----------->| IN-              OUT-|---- GND ----+
+                 +----------------------+             |
+                                                       v
+                                             +----------------+
+                                             | ESP32-C3 Mini  |
+                                             | 5V/VBUS <- 5 V |
+                                             | GND     <- GND |
+                                             | 3V3     -> VIO |
+                                             +----------------+
+```
+
+Wszystkie masy muszą być wspólne:
+
+- `GND` zasilacza
+- `GND` przetwornicy buck
+- `GND` ESP32-C3
+- `GND` obu sterowników silników
+
+## Podłączenie sterowników
+
+Minimalne połączenia dla każdego `TMC2209`:
+
+| Pin sterownika | Podajnik | Gilotyna |
+| --- | --- | --- |
+| `VM` / `MOT+` | `+12/24 V` | `+12/24 V` |
+| `GND` zasilania silnika | masa zasilacza | masa zasilacza |
+| `VIO` / `VDD` | `3.3 V` z ESP32 | `3.3 V` z ESP32 |
+| `GND` logiki | `GND` ESP32 | `GND` ESP32 |
+| `STEP` | `GPIO1` | `GPIO3` |
+| `DIR` | `GPIO0` | `GPIO7` |
+| `EN` | `GPIO4` | `GPIO4` |
+| wyjścia silnika | cewki silnika podajnika | cewki silnika gilotyny |
+
+Jeżeli używasz płytki rozszerzeń pod `A4988/DRV8825`, potraktuj ją jako płytkę nośną. Sprawdź opis pinów konkretnego modułu, bo kolejność `STEP`, `DIR`, `EN`, `VMOT`, `VDD` i `GND` może zależeć od wersji shielda.
+
+## Zasilanie
+
+Zalecany układ:
+
+- zasilacz `24 V DC` zasila piny `VM` sterowników silników
+- przetwornica `MP1584EN` obniża `24 V` do stabilnych `5 V`
+- `5 V` zasila pin `5V/VBUS` płytki `ESP32-C3`
+- pin `3V3` z ESP32 zasila logikę `VIO/VDD` sterowników
+
+Nie podawaj `24 V` na ESP32. Przed podłączeniem ESP32 ustaw wyjście przetwornicy buck miernikiem na `5.0 V`.
+
+Praca z wejściem `AC 230 V` zasilacza jest niebezpieczna. Podłączaj stronę sieciową tylko przy odłączonym zasilaniu i zabezpiecz zaciski przed dotykiem.
+
+## Kalibracja
+
+Wartość początkowa w firmware to:
+
+```text
+44.0 steps/mm
+```
+
+Praktyczna procedura:
+
+1. W panelu ustaw testowy przesuw, np. `100 mm`.
+2. Zmierz rzeczywisty wysuw kabla.
+3. Przelicz nową wartość:
 
 ```text
 nowe_steps_per_mm = stare_steps_per_mm * (zadana_dlugosc_mm / zmierzona_dlugosc_mm)
@@ -52,10 +167,12 @@ nowe_steps_per_mm = stare_steps_per_mm * (zadana_dlugosc_mm / zmierzona_dlugosc_
 Przykład:
 
 ```text
-52.4590 * (100 / 96.5) = 54.36
+44.0 * (100 / 96.5) = 45.60
 ```
 
 ## Budowanie i wgrywanie
+
+Projekt używa PlatformIO.
 
 ```bash
 pio run
@@ -63,8 +180,29 @@ pio run -t upload
 pio device monitor
 ```
 
-## Uwaga mechaniczna
+Domyślny port w `platformio.ini`:
 
-Kod zakłada, że jedno cięcie to zawsze stała liczba kroków `guillotineStepsPerCut`.
-Domyślna wartość pełnego obrotu gilotyny jest ustawiona na `1600`.
-Jeśli w praktyce pozycja noża potrafi się rozjechać, dodaj krańcówkę referencyjną dla gilotyny.
+```ini
+monitor_port = /dev/cu.usbmodem1101
+upload_port = /dev/cu.usbmodem1101
+```
+
+Jeżeli Twoja płytka pojawia się pod innym portem, zmień te wartości albo usuń je i pozwól PlatformIO wykryć port automatycznie.
+
+## Uruchomienie
+
+1. Sprawdź wszystkie połączenia bez podłączonych silników.
+2. Ustaw przetwornicę buck na `5 V`.
+3. Podłącz ESP32 i wgraj firmware.
+4. Podłącz sterowniki i silniki.
+5. Włącz zasilanie silników.
+6. Połącz się z Wi-Fi `KOZOcut`.
+7. Otwórz `http://192.168.4.1`.
+8. Wykonaj test `jog` i pojedyncze cięcie.
+9. Skalibruj `steps/mm` oraz liczbę kroków gilotyny.
+
+## Uwagi mechaniczne
+
+Kod zakłada, że jedno cięcie to zawsze stała liczba kroków `guillotineStepsPerCut`. Domyślna wartość to `1600`.
+
+Jeżeli pozycja noża potrafi się rozjechać, dodaj krańcówkę referencyjną dla gilotyny albo mechaniczny punkt bazowania. Przy pracy z nożem stosuj osłonę i nie uruchamiaj mechanizmu z odsłoniętą strefą cięcia.

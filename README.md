@@ -30,6 +30,8 @@ Projekt jest przygotowany tak, aby obudowę i elementy mechaniczne można było 
 | Ostrze z regulowanego narzędzia do ściągania izolacji UTP/STP | 1 | Użyte jako element tnący gilotyny i strippera |
 | Śruby krzyżakowe z łbem stożkowym `M3` i `M4` | wg potrzeb | Montaż elementów drukowanych i elektroniki |
 | Nitonakrętki aluminiowe `M3` i `M4` z łbem płaskim | wg potrzeb | Gwintowane punkty montażowe w częściach mechanicznych |
+| Inserty gwintowane do plastiku | wg potrzeb | Wtopki do drukowanych części 3D |
+| Nakrętki `M3` | wg potrzeb | Standardowe połączenia śrubowe i regulacje |
 | Wydrukowane części 3D | wg projektu | Rama, prowadnice, mocowania silników, docisk, osłony |
 | Przewody, złącza śrubowe, tulejki | wg potrzeb | Dobierz do finalnej konstrukcji |
 
@@ -45,6 +47,8 @@ Przykładowe źródła części z AliExpress:
 - Śruby krzyżakowe z łbem stożkowym `M3/M4`: https://a.aliexpress.com/_Ez9eS9Y
 - Nitonakrętki z łbem płaskim `M3/M4`: https://a.aliexpress.com/_EJ4cOce
 - Regulowane narzędzie UTP/STP do ściągania izolacji i cięcia kabli, użyte jako dawca ostrza: https://a.aliexpress.com/_EG4WMGQ
+- Inserty gwintowane do plastiku: https://pl.aliexpress.com/item/1005007653131713.html
+- Nakrętki `M3`: https://pl.aliexpress.com/item/1005009867140248.html
 
 ## Druk 3D i montaż mechaniczny
 
@@ -60,7 +64,7 @@ Części mechaniczne można drukować osobno, co ułatwia serwis i późniejsze 
 
 Po wydruku sprawdź osiowość prowadnicy kabla, docisk łożysk ekstrudera i swobodny ruch gilotyny. Mechanika musi poruszać się lekko przed podłączeniem silników, inaczej sterownik może gubić kroki.
 
-Do montażu drukowanych części użyto śrub `M3` i `M4` z łbem stożkowym oraz nitonakrętek `M3` i `M4`. Nitonakrętki warto osadzać w miejscach serwisowych, gdzie elementy będą wielokrotnie odkręcane, np. przy mocowaniu osłon, uchwytów silników i panelu elektroniki.
+Do montażu drukowanych części użyto śrub `M3` i `M4` z łbem stożkowym, nitonakrętek `M3` i `M4`, insertów gwintowanych do plastiku oraz standardowych nakrętek `M3`. Nitonakrętki i inserty warto osadzać w miejscach serwisowych, gdzie elementy będą wielokrotnie odkręcane, np. przy mocowaniu osłon, uchwytów silników i panelu elektroniki.
 
 Ostrze gilotyny i strippera zostało pozyskane z regulowanego narzędzia do ściągania izolacji i cięcia kabli `UTP/STP`. Przy projektowaniu mocowania ostrza zachowaj sztywne podparcie, możliwość regulacji oraz osłonę strefy cięcia.
 
@@ -252,6 +256,8 @@ The project is designed so the enclosure and mechanical parts can be 3D printed 
 | Blade from an adjustable UTP/STP cable stripping tool | 1 | Used as the guillotine and stripper cutting element |
 | `M3` and `M4` Phillips countersunk screws | as needed | Mounting printed parts and electronics |
 | `M3` and `M4` flat-head aluminum rivet nuts | as needed | Threaded mounting points in mechanical parts |
+| Threaded inserts for plastic | as needed | Heat-set inserts for 3D printed parts |
+| `M3` nuts | as needed | Standard screw joints and adjustments |
 | 3D printed parts | project-specific | Frame, guides, motor mounts, pressure mechanism, covers |
 | Wires, screw terminals, ferrules | as needed | Select according to the final build |
 
@@ -267,6 +273,8 @@ Example AliExpress part sources:
 - `M3/M4` Phillips countersunk screws: https://a.aliexpress.com/_Ez9eS9Y
 - `M3/M4` flat-head rivet nuts: https://a.aliexpress.com/_EJ4cOce
 - Adjustable UTP/STP cable stripping and cutting tool, used as a blade donor: https://a.aliexpress.com/_EG4WMGQ
+- Threaded inserts for plastic: https://pl.aliexpress.com/item/1005007653131713.html
+- `M3` nuts: https://pl.aliexpress.com/item/1005009867140248.html
 
 ## 3D Printing and Mechanical Assembly
 
@@ -282,7 +290,7 @@ The mechanical parts can be printed separately, which makes servicing and future
 
 After printing, check cable guide alignment, extruder bearing pressure, and free guillotine movement. The mechanism must move smoothly before the motors are connected, otherwise the drivers may skip steps.
 
-The printed parts use `M3` and `M4` countersunk screws and `M3`/`M4` rivet nuts. Rivet nuts are useful in service points where parts may be removed repeatedly, such as covers, motor mounts, and the electronics panel.
+The printed parts use `M3` and `M4` countersunk screws, `M3`/`M4` rivet nuts, threaded inserts for plastic, and standard `M3` nuts. Rivet nuts and inserts are useful in service points where parts may be removed repeatedly, such as covers, motor mounts, and the electronics panel.
 
 The guillotine and stripper blade was taken from an adjustable `UTP/STP` cable stripping and cutting tool. When designing the blade mount, keep the blade rigidly supported, adjustable, and covered by a guard around the cutting area.
 
